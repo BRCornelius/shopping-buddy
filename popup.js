@@ -1,3 +1,15 @@
+// Set up http request
+const http = new XMLHttpRequest();
+const handleLogin = response => {
+    if (http.readyState === XMLHttpRequest.DONE) {
+        if (http.status === 200) {
+          console.log(http.responseText);
+        } else {
+          console.log('There was a problem with the request.');
+        }
+    }
+}
+
 // Get current domain
 let domain = window.location.hostname;
 domain = domain.replace('www.', '').replace('.com', '');
@@ -110,7 +122,9 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
 
 const createEvents = () => {
     document.querySelector('._popup__login').addEventListener('click', event => {
-        console.log(username)
+        http.onreadystatechange = handleLogin;
+        http.open('GET', 'https://lg2lkz0xif.execute-api.us-east-1.amazonaws.com/auth');
+        http.send();
     })
     document.querySelector('._username__input').addEventListener('input', e => {
         username = e.target.value
@@ -121,7 +135,7 @@ const createEvents = () => {
     document.querySelector('._popup__forgot').addEventListener('click', () => {
         chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
     })
-    document.querySelector('.acme').addEventListener('click', () => {
+    document.querySelector('._popup__acme').addEventListener('click', () => {
         chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
     })
 }
