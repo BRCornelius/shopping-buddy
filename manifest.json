@@ -1,6 +1,6 @@
 {
     "name": "Shopping Buddy",
-    "version": "1",
+    "version": "1.0.0",
     "description": "Find ways to book with your points",
     "permissions": [
         "activeTab",
@@ -18,5 +18,15 @@
             "run_at": "document_end"
         }
     ],
+    "browser_action": {
+        "default_icon": "ACME_ExtensionLogo.png",
+        "icons": {
+            "16": "ACME_ExtensionLogo.png",
+            "24": "ACME_ExtensionLogo.png",
+            "32": "ACME_ExtensionLogo.png",
+            "48": "ACME_ExtensionLogo.png",
+            "128": "ACME_ExtensionLogo.png"
+        }
+    },
     "manifest_version": 2
 }
