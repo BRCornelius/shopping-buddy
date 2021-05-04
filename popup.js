@@ -27,17 +27,27 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         // Header Text
         let popupHeader = document.createElement('h1');
         popupHeader.style.cssText = 'line-height:40px;font-family:roboto;font-style:italic;'
-        +'font-size:40px';
+        +'font-size:40px;font-weight:bold;width:85%;';
         popupHeader.innerHTML = 'MAXIMIZE YOUR REWARDS';
+        // Close Button
+        let closeButton = document.createElement('p')
+        closeButton.className = '_close';
+        closeButton.innerHTML = 'X Close'
+        closeButton.style.cssText = 'font-size:12px;color: #DC3A3A;'
+        // Header container
+        let headerContainer = document.createElement('div');
+        headerContainer.appendChild(popupHeader);
+        headerContainer.appendChild(closeButton);
+        headerContainer.style.cssText = 'width:100%;display:flex;'
         // Subheader
         let popupSubHeader = document.createElement('h3');
         popupSubHeader.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
         +'font-size:16px;padding:1rem 0;';
         popupSubHeader.innerHTML = 'Log in using your ACME username and password to see your ACME Rewards Points.';
-        // header container
+        // header
         let header = document.createElement('div');
         header.style.cssText = 'display:block;width:100%;';
-        header.appendChild(popupHeader);
+        header.appendChild(headerContainer);
         header.appendChild(popupSubHeader);
 
         // Forgot password link
@@ -101,7 +111,8 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
 
         // Aggregate the popup.
         let basicPopUp = document.createElement('div');
-        basicPopUp.className = '_popup__container';
+        basicPopUp.className = '_popup';
+        basicPopUp.id = 'popup';
         basicPopUp.display = 'none';
         // add components to the popup
         basicPopUp.appendChild(header);
@@ -127,15 +138,18 @@ const createEvents = () => {
         http.send();
     })
     document.querySelector('._username__input').addEventListener('input', e => {
-        username = e.target.value
+        username = e.target.value;
     });
     document.querySelector('._password__input').addEventListener('input', e => {
-        password = e.target.value
+        password = e.target.value;
     });
     document.querySelector('._popup__forgot').addEventListener('click', () => {
         chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
     })
     document.querySelector('._popup__acme').addEventListener('click', () => {
         chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
+    })
+    document.querySelector('._close').addEventListener('click', () => {
+        document.querySelector('._popup').style.display = 'none';
     })
 }
