@@ -1,9 +1,15 @@
+// Set up state
+let username;
+let password;
+
 // Set up http request
 const http = new XMLHttpRequest();
 const handleLogin = response => {
     if (http.readyState === XMLHttpRequest.DONE) {
         if (http.status === 200) {
-          console.log(http.responseText);
+            document.querySelector('._subheader__default').style.display = 'none';
+            document.querySelector('._inputs').style.display = 'none';
+            document.querySelector('._subheader__logged').style.display = 'block';
         } else {
           console.log('There was a problem with the request.');
         }
@@ -13,9 +19,6 @@ const handleLogin = response => {
 // Get current domain
 let domain = window.location.hostname;
 domain = domain.replace('www.', '').replace('.com', '');
-
-let username;
-let password;
 
 chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response) => {
     let siteCheck = response.data && domain === 'orbitz'
@@ -41,14 +44,21 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         headerContainer.style.cssText = 'width:100%;display:flex;'
         // Subheader
         let popupSubHeader = document.createElement('h3');
+        popupSubHeader.className = '_subheader__default'
         popupSubHeader.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
         +'font-size:16px;padding:1rem 0;';
         popupSubHeader.innerHTML = 'Log in using your ACME username and password to see your ACME Rewards Points.';
+        let popupSubHeaderLoggedIn = document.createElement('h3');
+        popupSubHeaderLoggedIn.className = '_subheader__logged'
+        popupSubHeaderLoggedIn.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
+        +'font-size:16px;padding:1rem 0;display:none';
+        popupSubHeaderLoggedIn.innerHTML = 'Make the most of your points on your trip. Book using your ACME Rewards Points today!';
         // header
         let header = document.createElement('div');
         header.style.cssText = 'display:block;width:100%;';
         header.appendChild(headerContainer);
         header.appendChild(popupSubHeader);
+        header.appendChild(popupSubHeaderLoggedIn);
 
         // Forgot password link
         let forgotPasswordLink = document.createElement('p');
@@ -79,6 +89,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         passwordInputLabel.innerHTML = 'Password';
         // Input Container
         let inputs = document.createElement('div');
+        inputs.className = '_inputs';
         inputs.style.cssText = 'display:block;width:100%;padding:1rem 0;';
         inputs.appendChild(userNameInputLabel);
         inputs.appendChild(userNameInput);
