@@ -9,7 +9,9 @@ const handleLogin = response => {
         if (http.status === 200) {
             document.querySelector('._subheader__default').style.display = 'none';
             document.querySelector('._inputs').style.display = 'none';
+            document.querySelector('._popup__login').style.display = 'none';
             document.querySelector('._subheader__logged').style.display = 'block';
+            document.querySelector('._popup__points').style.display = 'flex';
         } else {
           console.log('There was a problem with the request.');
         }
@@ -113,12 +115,19 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         acmeButton.style.cssText = sharedButtonStyles
         +'border:3px solid #DC3A3A;background:white;color:#DC3A3A;';
         acmeButton.innerHTML = '<p>VISIT ACME</p>';
+        // Points button
+        let pointsButton = document.createElement('div');
+        pointsButton.className = '_popup__points';
+        pointsButton.style.cssText = sharedButtonStyles
+        +'border:1px solid #DC3A3A;background:#DC3A3A;color:white;display:none;';
+        pointsButton.innerHTML = '<p>VIEW POINTS</p>';
         // Button Container
         let buttons = document.createElement('div');
         buttons.style.cssText = 'width:100%;display:flex;justify-content:space-around;'
         +'padding:1rem 0;';
         buttons.appendChild(acmeButton);
         buttons.appendChild(loginButton);
+        buttons.appendChild(pointsButton)
 
         // Aggregate the popup.
         let basicPopUp = document.createElement('div');
