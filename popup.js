@@ -133,13 +133,27 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         pointsButton.style.cssText = sharedButtonStyles
         +'border:1px solid #DC3A3A;background:#DC3A3A;color:white;display:none;';
         pointsButton.innerHTML = '<p>VIEW POINTS</p>';
+        // Logout Button
+        let logoutButton = document.createElement('div');
+        logoutButton.className = '_popup__logout';
+        logoutButton.style.cssText = sharedButtonStyles
+        +'border:3px solid #DC3A3A;background:white;color:#DC3A3A;display:none';
+        logoutButton.innerHTML = '<p>LOGOUT</p>';
+        // Book ACME button
+        let acmeBookButton = document.createElement('div');
+        acmeBookButton.className = '_popup__book';
+        acmeBookButton.style.cssText = sharedButtonStyles
+        +'border:1px solid #DC3A3A;background:#DC3A3A;color:white;display:none;';
+        acmeBookButton.innerHTML = '<p>BOOK WITH ACME</p>';
         // Button Container
         let buttons = document.createElement('div');
         buttons.style.cssText = 'width:100%;display:flex;justify-content:space-around;'
         +'padding:1rem 0;';
         buttons.appendChild(acmeButton);
         buttons.appendChild(loginButton);
-        buttons.appendChild(pointsButton)
+        buttons.appendChild(pointsButton);
+        buttons.appendChild(logoutButton);
+        buttons.appendChild(acmeBookButton);
 
         // Aggregate the popup.
         let basicPopUp = document.createElement('div');
@@ -164,29 +178,43 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
 })
 
 const createEvents = () => {
+    // Login button action
     document.querySelector('._popup__login').addEventListener('click', event => {
         http.onreadystatechange = handleLogin;
         http.open('GET', 'https://lg2lkz0xif.execute-api.us-east-1.amazonaws.com/auth');
         http.send();
     })
+    // Logout button action
+    document.querySelector('._popup__logout').addEventListener('click', e => {
+        document.querySelector('._popup').style.display = 'none';
+    });
+    // Input handlers
     document.querySelector('._username__input').addEventListener('input', e => {
         username = e.target.value;
     });
     document.querySelector('._password__input').addEventListener('input', e => {
         password = e.target.value;
     });
+    // Forgot password action
     document.querySelector('._popup__forgot').addEventListener('click', () => {
         chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
     })
+    // ACME button action
     document.querySelector('._popup__acme').addEventListener('click', () => {
         chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
     })
+    // Close action
     document.querySelector('._close').addEventListener('click', () => {
         document.querySelector('._popup').style.display = 'none';
     })
+    // View points button
     document.querySelector('._popup__points').addEventListener('click', () => {
         document.querySelector('._subheader__logged').style.display = 'none';
         document.querySelector('._subheader__points').style.display = 'block';
+        document.querySelector('._popup__logout').style.display = 'flex';
+        document.querySelector('._popup__book').style.display = 'flex';
+        document.querySelector('._popup__acme').style.display = 'none';
+        document.querySelector('._popup__points').style.display = 'none';
     })
 
 }

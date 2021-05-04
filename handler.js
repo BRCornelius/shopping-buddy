@@ -6,7 +6,6 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
         // TO_DO insert request to login service and handle resposne
         // TO_DO see if the chrome object is available in angular services
         const domain = msg.data.domain
-        console.log(domain)
         response({
             type: 'result',
             status: 'success',
