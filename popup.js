@@ -1,12 +1,22 @@
 // Set up state
 let username;
 let password;
+let points;
 
 // Set up http request
 const http = new XMLHttpRequest();
-const handleLogin = response => {
+const handleLogin = e => {
     if (http.readyState === XMLHttpRequest.DONE) {
         if (http.status === 200) {
+            // Points Subheader
+            const user = JSON.parse(http.response);
+            points = `<p style="font-size:20px;color=red">${user.points} points.</p>`;
+            let pointsSubHeader = document.createElement('h3');
+            pointsSubHeader.className = '_subheader__points'
+            pointsSubHeader.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
+            +'font-size:16px;padding:1rem 0;display:none';
+            pointsSubHeader.innerHTML = `You currently have ${points}`;
+            document.querySelector('._header').appendChild(pointsSubHeader);
             document.querySelector('._subheader__default').style.display = 'none';
             document.querySelector('._inputs').style.display = 'none';
             document.querySelector('._popup__login').style.display = 'none';
@@ -44,12 +54,13 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         headerContainer.appendChild(popupHeader);
         headerContainer.appendChild(closeButton);
         headerContainer.style.cssText = 'width:100%;display:flex;'
-        // Subheader
+        // Default Subheader
         let popupSubHeader = document.createElement('h3');
         popupSubHeader.className = '_subheader__default'
         popupSubHeader.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
         +'font-size:16px;padding:1rem 0;';
         popupSubHeader.innerHTML = 'Log in using your ACME username and password to see your ACME Rewards Points.';
+        // Logged In Subheader
         let popupSubHeaderLoggedIn = document.createElement('h3');
         popupSubHeaderLoggedIn.className = '_subheader__logged'
         popupSubHeaderLoggedIn.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
@@ -57,6 +68,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         popupSubHeaderLoggedIn.innerHTML = 'Make the most of your points on your trip. Book using your ACME Rewards Points today!';
         // header
         let header = document.createElement('div');
+        header.className = "_header";
         header.style.cssText = 'display:block;width:100%;';
         header.appendChild(headerContainer);
         header.appendChild(popupSubHeader);
@@ -172,4 +184,9 @@ const createEvents = () => {
     document.querySelector('._close').addEventListener('click', () => {
         document.querySelector('._popup').style.display = 'none';
     })
+    document.querySelector('._popup__points').addEventListener('click', () => {
+        document.querySelector('._subheader__logged').style.display = 'none';
+        document.querySelector('._subheader__points').style.display = 'block';
+    })
+
 }
