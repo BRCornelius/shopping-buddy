@@ -29,7 +29,9 @@ const handleLogin = () => {
                 document.querySelector('._inputs').style.display = 'none';
                 document.querySelector('._popup__login').style.display = 'none';
                 document.querySelector('._subheader__logged').style.display = 'block';
+                document.querySelector('._popup__acme').style.display = 'none';
                 document.querySelector('._popup__points').style.display = 'flex';
+                document.querySelector('._popup__book').style.display = 'flex';
                 document.querySelector('._error').style.display = 'none';
             } else if (response.statusCode === 300) {
                 document.querySelector('._error').style.display = 'block';
@@ -45,10 +47,12 @@ let domain = window.location.hostname;
 domain = domain.replace('www.', '').replace('.com', '');
 
 // Generate button
-const sharedButtonStyles = 'height:51px;width:49%;border-radius:5px;cursor:pointer;'
+const sharedButtonStyles = 'height:51px;width:45%;border-radius:5px;cursor:pointer;'
 +'z-index:9999;display:flex;justify-content:center;align-items:center;'
 +`font-family:${fontFamilyMedium};line-height:19px;font-size:16px;`
 +'font-weight:bold;';
+const solidButtonStyles = `${sharedButtonStyles}border:1px solid ${defaultColor};background:${defaultColor};color:white;`
+const outlinedButtonStyles = `${sharedButtonStyles}border:3px solid ${defaultColor};background:white;color:${defaultColor};`
 const generateButton = (className, styles, innerHTML, container) => {
     let button = document.createElement('div');
     button.className = className;
@@ -58,7 +62,7 @@ const generateButton = (className, styles, innerHTML, container) => {
 }
 
 chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response) => {
-    let siteCheck = response.data && domain === 'orbitz'
+    let siteCheck = response.data && domain === 'booking'
     // For logged in user
     if(siteCheck){
         // Create html
@@ -94,7 +98,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         popupSubHeaderLoggedIn.className = '_subheader__logged'
         popupSubHeaderLoggedIn.style.cssText = `line-height:24px;font-family:${fontFamilyRegular};font-style:regular;`
         +'font-size:16px;padding:1rem 0;display:none;';
-        popupSubHeaderLoggedIn.innerHTML = 'Make the most of your points on your trip. Book using your ACME Rewards Points today!';
+        popupSubHeaderLoggedIn.innerHTML = 'Ready to Travel? Membership Reward Points can help you get there.';
         // header
         let header = document.createElement('div');
         header.className = "_header";
@@ -151,41 +155,16 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         let buttons = document.createElement('div');
         buttons.style.cssText = 'width:100%;display:flex;justify-content:space-around;'
         +'padding:1rem 0;';
-        // ACME Button
-        generateButton(
-            '_popup__acme',
-            `border:3px solid ${defaultColor};background:white;color:${defaultColor};`,
-            '<p>Visit AMEX</p>',
-            buttons
-        )
+        // Amex Button
+        generateButton('_popup__acme', outlinedButtonStyles+'display:flex;', '<p>Visit AMEX</p>', buttons);
         // Login Button
-        generateButton(
-            '_popup__login',
-            `border:1px solid ${defaultColor};background:${defaultColor};color:white;`,
-            '<p>Login to Rewards</p>',
-            buttons
-        )
+        generateButton('_popup__login', solidButtonStyles, '<p>Login to Rewards</p>', buttons);
         // Points Button
-        generateButton(
-            '_popup__points',
-            `border:1px solid ${defaultColor};background:${defaultColor};color:white;display:none;`,
-            '<p>VIEW POINTS</p>',
-            buttons
-        )
+        generateButton('_popup__points', outlinedButtonStyles+'display:none;', '<p>View Points</p>', buttons);
         // Logout Button
-        generateButton(
-            '_popup__logout',
-            `border:3px solid ${defaultColor};background:white;color:${defaultColor};display:none`,
-            '<p>LOGOUT</p>',
-            buttons
-        )
+        generateButton('_popup__logout',outlinedButtonStyles+'display:none;', '<p>Log Out</p>', buttons);
         // Book with ACME Button
-        generateButton(
-            '_popup__book',
-            `border:1px solid ${defaultColor};background:${defaultColor};color:white;display:none;`,
-            '<p>BOOK WITH ACME</p>',
-            buttons
-        );
+        generateButton('_popup__book', solidButtonStyles+'display:none;', '<p>Pay with Points</p>', buttons);
 
         // Aggregate the popup.
         let basicPopUp = document.createElement('div');
