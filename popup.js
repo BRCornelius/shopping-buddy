@@ -1,24 +1,29 @@
 // Set up state
 let username;
 let password;
-let points;
+
+const helvetica = 'Helvetica Neue'
+const fontFamilyLight = `${helvetica} Light`;
+const fontFamilyRegular = `${helvetica} Regular`;
+const fontFamilyMedium = `${helvetica} Medium`;
+const fontFamilyBold = `${helvetica} Bold`;
+
+const defaultColor = '#006FCF'
 
 // Set up http request
 const http = new XMLHttpRequest();
-const handleLogin = e => {
+const handleLogin = () => {
     if (http.readyState === XMLHttpRequest.DONE) {
         if (http.status === 200) {
             const response = JSON.parse(http.response);
             if (response.statusCode === 200) {
                 const user = JSON.parse(response.body);
-                console.log(user)
                 // Points Subheader
-                points = `<p style="font-size:20px;color=red">${user.points} points.</p>`;
                 let pointsSubHeader = document.createElement('h3');
                 pointsSubHeader.className = '_subheader__points'
-                pointsSubHeader.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
+                pointsSubHeader.style.cssText = `line-height:24px;font-family:${fontFamilyRegular};font-style:regular;`
                 +'font-size:16px;padding:1rem 0;display:none';
-                pointsSubHeader.innerHTML = `You currently have ${points}`;
+                pointsSubHeader.innerHTML = `You currently have ${user.points} points.`;
                 document.querySelector('._header').appendChild(pointsSubHeader);
                 document.querySelector('._subheader__default').style.display = 'none';
                 document.querySelector('._inputs').style.display = 'none';
@@ -42,7 +47,7 @@ domain = domain.replace('www.', '').replace('.com', '');
 // Generate button
 const sharedButtonStyles = 'height:51px;width:49%;border-radius:5px;cursor:pointer;'
 +'z-index:9999;display:flex;justify-content:center;align-items:center;'
-+'font-family:roboto;font-style:italic;line-height:19px;font-size:16px;'
++`font-family:${fontFamilyMedium};line-height:19px;font-size:16px;`
 +'font-weight:bold;';
 const generateButton = (className, styles, innerHTML, container) => {
     let button = document.createElement('div');
@@ -61,30 +66,34 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
 
         // Header Text
         let popupHeader = document.createElement('h1');
-        popupHeader.style.cssText = 'line-height:40px;font-family:roboto;font-style:italic;'
-        +'font-size:40px;font-weight:bold;width:85%;';
-        popupHeader.innerHTML = 'MAXIMIZE YOUR REWARDS';
+        popupHeader.style.cssText = `line-height:44px;font-family:${fontFamilyLight};`
+        +'font-size:38px;width:85%;font-weight:light;';
+        popupHeader.innerHTML = 'Ready to travel?';
         // Close Button
         let closeButton = document.createElement('p')
         closeButton.className = '_close';
-        closeButton.innerHTML = 'X Close'
-        closeButton.style.cssText = 'font-size:12px;color: #DC3A3A;'
+        closeButton.innerHTML = 'X'
+        closeButton.style.cssText = `font-size:16px;color:${defaultColor};font-weight:bold;`
         // Header container
         let headerContainer = document.createElement('div');
         headerContainer.appendChild(popupHeader);
         headerContainer.appendChild(closeButton);
-        headerContainer.style.cssText = 'width:100%;display:flex;'
+        headerContainer.style.cssText = 'width:100%;display:flex;justify-content:space-between;'
         // Default Subheader
         let popupSubHeader = document.createElement('h3');
+        const partnerLink = document.createElement('h3');
+        partnerLink.innerHTML = 'AmexTravel.com.';
+        partnerLink.style.cssText = 'color:blue;text-decoration:underline;'
         popupSubHeader.className = '_subheader__default'
-        popupSubHeader.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
+        popupSubHeader.style.cssText = `line-height:24px;font-family:${fontFamilyRegular};font-style:regular;`
         +'font-size:16px;padding:1rem 0;';
-        popupSubHeader.innerHTML = 'Log in using your ACME username and password to see your ACME Rewards Points.';
+        popupSubHeader.innerHTML = `Log in below to see points balance and book on`;
+        popupSubHeader.appendChild(partnerLink);
         // Logged In Subheader
         let popupSubHeaderLoggedIn = document.createElement('h3');
         popupSubHeaderLoggedIn.className = '_subheader__logged'
-        popupSubHeaderLoggedIn.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
-        +'font-size:16px;padding:1rem 0;display:none';
+        popupSubHeaderLoggedIn.style.cssText = `line-height:24px;font-family:${fontFamilyRegular};font-style:regular;`
+        +'font-size:16px;padding:1rem 0;display:none;';
         popupSubHeaderLoggedIn.innerHTML = 'Make the most of your points on your trip. Book using your ACME Rewards Points today!';
         // header
         let header = document.createElement('div');
@@ -100,17 +109,17 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         forgotPasswordLink.innerHTML = 'Forgot password?';
         let forgotPassword = document.createElement('div');
         forgotPassword.style.cssText = 'width:100%;display:flex;justify-content:flex-end;'
-        +'cursor:pointer;text-decoration:underline;color:#DC3A3A;line-height:20px;font-size:12px;';
+        +`cursor:pointer;text-decoration:underline;color:${defaultColor};line-height:24px;font-size:16px;`;
         forgotPassword.appendChild(forgotPasswordLink);
         // Login error text
         let errorText = document.createElement('p');
         errorText.className = "_error";
-        errorText.style.cssText = 'line-height:20px;font-size:12px;color:#DC3A3A;display:none;'
+        errorText.style.cssText = `line-height:20px;font-size:12px;color:${defaultColor};display:none;`
         errorText.innerHTML = 'The password and username do not match our records.'
 
         // Input Username
-        const sharedLabelStyles = 'font-family:roboto;line-height:16px;font-size:14px;font-weight:bold';
-        const sharedInputStyles = 'width:100%;border:1px solid black;height:50px';
+        const sharedLabelStyles = `font-family:${fontFamilyBold};line-height:16px;font-size:14px;font-weight:bold;`;
+        const sharedInputStyles = 'width:100%;border:1px solid black;height:50px;';
         let userNameInput = document.createElement('input');
         userNameInput.className = '_username__input';
         userNameInput.style.cssText = sharedInputStyles;
@@ -145,35 +154,35 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         // ACME Button
         generateButton(
             '_popup__acme',
-            'border:3px solid #DC3A3A;background:white;color:#DC3A3A;',
-            '<p>VISIT ACME</p>',
+            `border:3px solid ${defaultColor};background:white;color:${defaultColor};`,
+            '<p>Visit AMEX</p>',
             buttons
         )
         // Login Button
         generateButton(
             '_popup__login',
-            'border:1px solid #DC3A3A;background:#DC3A3A;color:white;',
-            '<p>LOGIN</p>',
+            `border:1px solid ${defaultColor};background:${defaultColor};color:white;`,
+            '<p>Login to Rewards</p>',
             buttons
         )
         // Points Button
         generateButton(
             '_popup__points',
-            'border:1px solid #DC3A3A;background:#DC3A3A;color:white;display:none;',
+            `border:1px solid ${defaultColor};background:${defaultColor};color:white;display:none;`,
             '<p>VIEW POINTS</p>',
             buttons
         )
         // Logout Button
         generateButton(
             '_popup__logout',
-            'border:3px solid #DC3A3A;background:white;color:#DC3A3A;display:none',
+            `border:3px solid ${defaultColor};background:white;color:${defaultColor};display:none`,
             '<p>LOGOUT</p>',
             buttons
         )
         // Book with ACME Button
         generateButton(
             '_popup__book',
-            'border:1px solid #DC3A3A;background:#DC3A3A;color:white;display:none;',
+            `border:1px solid ${defaultColor};background:${defaultColor};color:white;display:none;`,
             '<p>BOOK WITH ACME</p>',
             buttons
         );
