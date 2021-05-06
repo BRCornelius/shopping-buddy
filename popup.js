@@ -109,6 +109,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         let passwordInput = document.createElement('input');
         passwordInput.className = '_password__input';
         passwordInput.style.cssText = sharedInputStyles;
+        passwordInput.type = 'password';
         passwordInput.id = 'password';
         let passwordInputLabel = document.createElement('p');
         passwordInputLabel.style.cssText = sharedLabelStyles;
