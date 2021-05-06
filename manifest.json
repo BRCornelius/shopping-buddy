@@ -19,13 +19,13 @@
         }
     ],
     "browser_action": {
-        "default_icon": "ACME_ExtensionLogo.png",
+        "default_icon": "amex-icon.png",
         "icons": {
-            "16": "ACME_ExtensionLogo.png",
-            "24": "ACME_ExtensionLogo.png",
-            "32": "ACME_ExtensionLogo.png",
-            "48": "ACME_ExtensionLogo.png",
-            "128": "ACME_ExtensionLogo.png"
+            "16": "amex-icon.png",
+            "24": "amex-icon.png",
+            "32": "amex-icon.png",
+            "48": "amex-icon.png",
+            "128": "amex-icon.png"
         }
     },
     "manifest_version": 2
