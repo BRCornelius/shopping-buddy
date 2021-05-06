@@ -233,7 +233,7 @@ const createEvents = () => {
     document.querySelector('._close').addEventListener('click', () => {
         document.querySelector('._popup').style.display = 'none';
     })
-    // View points button
+    // View points button action
     document.querySelector('._popup__points').addEventListener('click', () => {
         document.querySelector('._subheader__logged').style.display = 'none';
         document.querySelector('._subheader__points').style.display = 'block';
@@ -242,5 +242,8 @@ const createEvents = () => {
         document.querySelector('._popup__acme').style.display = 'none';
         document.querySelector('._popup__points').style.display = 'none';
     })
-
+    // Book with ACME button
+    document.querySelector('._popup__book').addEventListener('click', () => {
+        chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
+    })
 }
