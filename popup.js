@@ -8,22 +8,29 @@ const http = new XMLHttpRequest();
 const handleLogin = e => {
     if (http.readyState === XMLHttpRequest.DONE) {
         if (http.status === 200) {
-            // Points Subheader
-            const user = JSON.parse(http.response);
-            points = `<p style="font-size:20px;color=red">${user.points} points.</p>`;
-            let pointsSubHeader = document.createElement('h3');
-            pointsSubHeader.className = '_subheader__points'
-            pointsSubHeader.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
-            +'font-size:16px;padding:1rem 0;display:none';
-            pointsSubHeader.innerHTML = `You currently have ${points}`;
-            document.querySelector('._header').appendChild(pointsSubHeader);
-            document.querySelector('._subheader__default').style.display = 'none';
-            document.querySelector('._inputs').style.display = 'none';
-            document.querySelector('._popup__login').style.display = 'none';
-            document.querySelector('._subheader__logged').style.display = 'block';
-            document.querySelector('._popup__points').style.display = 'flex';
+            const response = JSON.parse(http.response);
+            if (response.statusCode === 200) {
+                const user = JSON.parse(response.body);
+                console.log(user)
+                // Points Subheader
+                points = `<p style="font-size:20px;color=red">${user.points} points.</p>`;
+                let pointsSubHeader = document.createElement('h3');
+                pointsSubHeader.className = '_subheader__points'
+                pointsSubHeader.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
+                +'font-size:16px;padding:1rem 0;display:none';
+                pointsSubHeader.innerHTML = `You currently have ${points}`;
+                document.querySelector('._header').appendChild(pointsSubHeader);
+                document.querySelector('._subheader__default').style.display = 'none';
+                document.querySelector('._inputs').style.display = 'none';
+                document.querySelector('._popup__login').style.display = 'none';
+                document.querySelector('._subheader__logged').style.display = 'block';
+                document.querySelector('._popup__points').style.display = 'flex';
+                document.querySelector('._error').style.display = 'none';
+            } else if (response.statusCode === 300) {
+                document.querySelector('._error').style.display = 'block';
+            }
         } else {
-          console.log('There was a problem with the request.');
+            console.log('There was a problem with the request.');
         }
     }
 }
@@ -76,12 +83,17 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
 
         // Forgot password link
         let forgotPasswordLink = document.createElement('p');
-        forgotPasswordLink.className = '_popup__forgot'
-        forgotPasswordLink.innerHTML = 'Forgot password?'
+        forgotPasswordLink.className = '_popup__forgot';
+        forgotPasswordLink.innerHTML = 'Forgot password?';
         let forgotPassword = document.createElement('div');
         forgotPassword.style.cssText = 'width:100%;display:flex;justify-content:flex-end;'
         +'cursor:pointer;text-decoration:underline;color:#DC3A3A;line-height:20px;font-size:12px;';
         forgotPassword.appendChild(forgotPasswordLink);
+        // Login error text
+        let errorText = document.createElement('p');
+        errorText.className = "_error";
+        errorText.style.cssText = 'line-height:20px;font-size:12px;color:#DC3A3A;display:none;'
+        errorText.innerHTML = 'The password and username do not match our records.'
 
         // Input Username
         const sharedLabelStyles = 'font-family:roboto;line-height:16px;font-size:14px;font-weight:bold';
@@ -109,6 +121,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         inputs.appendChild(userNameInput);
         inputs.appendChild(passwordInputLabel);
         inputs.appendChild(passwordInput);
+        inputs.appendChild(errorText);
         inputs.appendChild(forgotPassword);
 
         // Login Button
@@ -181,8 +194,11 @@ const createEvents = () => {
     // Login button action
     document.querySelector('._popup__login').addEventListener('click', event => {
         http.onreadystatechange = handleLogin;
-        http.open('GET', 'https://lg2lkz0xif.execute-api.us-east-1.amazonaws.com/auth');
-        http.send();
+        http.open('POST', 'https://ee1huftgdh.execute-api.us-east-1.amazonaws.com/prod/auth');
+        http.send(JSON.stringify({
+            username: username,
+            password: password
+        }));
     })
     // Logout button action
     document.querySelector('._popup__logout').addEventListener('click', e => {
