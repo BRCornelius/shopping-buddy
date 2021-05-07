@@ -8,7 +8,10 @@ const fontFamilyRegular = `${helvetica} Regular`;
 const fontFamilyMedium = `${helvetica} Medium`;
 const fontFamilyBold = `${helvetica} Bold`;
 
-const defaultColor = '#006FCF'
+const defaultColor = '#006FCF';
+const darkBlue = '#00175A';
+const lightGrey = '#333333';
+const errorRed = '#B42C01';
 
 // Set up http request
 const http = new XMLHttpRequest();
@@ -70,8 +73,8 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
 
         // Header Text
         let popupHeader = document.createElement('h1');
-        popupHeader.style.cssText = `line-height:44px;font-family:${fontFamilyLight};`
-        +'font-size:38px;width:85%;font-weight:light;';
+        popupHeader.style.cssText = `line-height:44px;font-family:${fontFamilyLight};color:${darkBlue};`
+        +'font-size:38px;width:85%;font-weight:lighter;';
         popupHeader.innerHTML = 'Ready to travel?';
         // Close Button
         let closeButton = document.createElement('p')
@@ -79,28 +82,29 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         closeButton.innerHTML = 'X'
         closeButton.style.cssText = `font-size:16px;color:${defaultColor};font-weight:bold;`
         // Header container
-        let headerContainer = document.createElement('div');
+        const headerContainer = document.createElement('div');
         headerContainer.appendChild(popupHeader);
         headerContainer.appendChild(closeButton);
         headerContainer.style.cssText = 'width:100%;display:flex;justify-content:space-between;'
         // Default Subheader
-        let popupSubHeader = document.createElement('h3');
+        const sharedSubheaderStyles = `line-height:24px;font-family:${fontFamilyRegular};color:${lightGrey};`
+        + 'font-size:16px;padding:1rem 0;font-style:regular;';
+        const popupSubHeader = document.createElement('h3');
         const partnerLink = document.createElement('h3');
         partnerLink.innerHTML = 'AmexTravel.com.';
-        partnerLink.style.cssText = 'color:blue;text-decoration:underline;'
+        partnerLink.style.cssText = 'color:blue;text-decoration:underline;cursor:pointer;'
+        partnerLink.className = '_link';
         popupSubHeader.className = '_subheader__default'
-        popupSubHeader.style.cssText = `line-height:24px;font-family:${fontFamilyRegular};font-style:regular;`
-        +'font-size:16px;padding:1rem 0;';
+        popupSubHeader.style.cssText = sharedSubheaderStyles;
         popupSubHeader.innerHTML = `Log in below to see points balance and book on`;
         popupSubHeader.appendChild(partnerLink);
         // Logged In Subheader
-        let popupSubHeaderLoggedIn = document.createElement('h3');
+        const popupSubHeaderLoggedIn = document.createElement('h3');
         popupSubHeaderLoggedIn.className = '_subheader__logged'
-        popupSubHeaderLoggedIn.style.cssText = `line-height:24px;font-family:${fontFamilyRegular};font-style:regular;`
-        +'font-size:16px;padding:1rem 0;display:none;';
+        popupSubHeaderLoggedIn.style.cssText = sharedSubheaderStyles+'display:none;';
         popupSubHeaderLoggedIn.innerHTML = 'Ready to Travel? Membership Reward Points can help you get there.';
         // header
-        let header = document.createElement('div');
+        const header = document.createElement('div');
         header.className = "_header";
         header.style.cssText = 'display:block;width:100%;';
         header.appendChild(headerContainer);
@@ -118,12 +122,12 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         // Login error text
         let errorText = document.createElement('p');
         errorText.className = "_error";
-        errorText.style.cssText = `line-height:20px;font-size:12px;color:${defaultColor};display:none;`
+        errorText.style.cssText = `line-height:20px;font-size:12px;color:${errorRed};display:none;`
         errorText.innerHTML = 'The password and username do not match our records.'
 
         // Input Username
         const sharedLabelStyles = `font-family:${fontFamilyBold};line-height:16px;font-size:14px;font-weight:bold;`;
-        const sharedInputStyles = 'width:100%;border:1px solid black;height:50px;';
+        const sharedInputStyles = 'width:100%;border:1px solid black;height:50px;padding-left:5px;';
         let userNameInput = document.createElement('input');
         userNameInput.className = '_username__input';
         userNameInput.style.cssText = sharedInputStyles;
@@ -215,6 +219,10 @@ const createEvents = () => {
     })
     // ACME button action
     document.querySelector('._popup__acme').addEventListener('click', () => {
+        chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
+    })
+    // ACME button action
+    document.querySelector('._link').addEventListener('click', () => {
         chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
     })
     // Close action

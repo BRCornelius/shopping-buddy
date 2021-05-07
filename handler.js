@@ -14,7 +14,7 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
         });
     }
     if(msg.command === 'forgot') {
-        chrome.tabs.create({url: 'https://www.iseatz.com/en'})
+        chrome.tabs.create({url: 'https://www.americanexpress.com/en-us/travel/'})
         response({
             data: 'success!'
         })
