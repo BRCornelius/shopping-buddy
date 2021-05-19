@@ -1,4 +1,4 @@
-// Set up state
+// Captured variables
 let username;
 let password;
 
@@ -13,7 +13,7 @@ const darkBlue = '#00175A';
 const lightGrey = '#333333';
 const errorRed = '#B42C01';
 
-// Set up http request
+// Http request
 const http = new XMLHttpRequest();
 const handleLogin = () => {
     if (http.readyState === XMLHttpRequest.DONE) {
@@ -30,11 +30,11 @@ const handleLogin = () => {
                 document.querySelector('._header').appendChild(pointsSubHeader);
                 document.querySelector('._subheader__default').style.display = 'none';
                 document.querySelector('._inputs').style.display = 'none';
-                document.querySelector('._popup__login').style.display = 'none';
+                document.querySelector('._button__login').style.display = 'none';
                 document.querySelector('._subheader__logged').style.display = 'block';
-                document.querySelector('._popup__acme').style.display = 'none';
-                document.querySelector('._popup__points').style.display = 'flex';
-                document.querySelector('._popup__book').style.display = 'flex';
+                document.querySelector('._button__amex').style.display = 'none';
+                document.querySelector('._button__points').style.display = 'flex';
+                document.querySelector('._button__book').style.display = 'flex';
                 document.querySelector('._error').style.display = 'none';
             } else if (response.statusCode === 300) {
                 document.querySelector('._error').style.display = 'block';
@@ -45,13 +45,16 @@ const handleLogin = () => {
     }
 }
 
-// Get current domain
+// Handle domain
 let domain = window.location.hostname;
 domain = domain.replace('www.', '').replace('.com', '');
+// Set up array of sites that allow the popup.
+const positiveSites = ['booking', 'kayak']
+const checkDomain = positiveSites.includes(domain);
 
 // Generate button
 const sharedButtonStyles = 'height:51px;width:45%;border-radius:5px;cursor:pointer;'
-+'z-index:9999;display:flex;justify-content:center;align-items:center;'
++'z-index:999999;display:flex;justify-content:center;align-items:center;'
 +`font-family:${fontFamilyMedium};line-height:19px;font-size:16px;`
 +'font-weight:bold;';
 const solidButtonStyles = `${sharedButtonStyles}border:1px solid ${defaultColor};background:${defaultColor};color:white;`
@@ -65,7 +68,7 @@ const generateButton = (className, styles, innerHTML, container) => {
 }
 
 chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response) => {
-    let siteCheck = response.data && domain === 'booking'
+    let siteCheck = response.data && checkDomain
     // For logged in user
     if(siteCheck){
         // Create html
@@ -80,7 +83,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         let closeButton = document.createElement('p')
         closeButton.className = '_close';
         closeButton.innerHTML = 'X'
-        closeButton.style.cssText = `font-size:16px;color:${defaultColor};font-weight:bold;`
+        closeButton.style.cssText = `font-size:16px;color:${defaultColor};font-weight:bold;cursor:pointer;`
         // Header container
         const headerContainer = document.createElement('div');
         headerContainer.appendChild(popupHeader);
@@ -88,11 +91,11 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         headerContainer.style.cssText = 'width:100%;display:flex;justify-content:space-between;'
         // Default Subheader
         const sharedSubheaderStyles = `line-height:24px;font-family:${fontFamilyRegular};color:${lightGrey};`
-        + 'font-size:16px;padding:1rem 0;font-style:regular;';
+        + 'font-size:16px;font-style:regular;';
         const popupSubHeader = document.createElement('h3');
         const partnerLink = document.createElement('h3');
         partnerLink.innerHTML = 'AmexTravel.com.';
-        partnerLink.style.cssText = 'color:blue;text-decoration:underline;cursor:pointer;'
+        partnerLink.style.cssText = 'color:blue;text-decoration:underline;cursor:pointer;font-size:16px;'
         partnerLink.className = '_link';
         popupSubHeader.className = '_subheader__default'
         popupSubHeader.style.cssText = sharedSubheaderStyles;
@@ -113,7 +116,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
 
         // Forgot password link
         let forgotPasswordLink = document.createElement('p');
-        forgotPasswordLink.className = '_popup__forgot';
+        forgotPasswordLink.className = '_button__forgot';
         forgotPasswordLink.innerHTML = 'Forgot password?';
         let forgotPassword = document.createElement('div');
         forgotPassword.style.cssText = 'width:100%;display:flex;justify-content:flex-end;'
@@ -129,7 +132,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         const sharedLabelStyles = `font-family:${fontFamilyBold};line-height:16px;font-size:14px;font-weight:bold;`;
         const sharedInputStyles = 'width:100%;border:1px solid black;height:50px;padding-left:5px;';
         let userNameInput = document.createElement('input');
-        userNameInput.className = '_username__input';
+        userNameInput.className = '_input__username';
         userNameInput.style.cssText = sharedInputStyles;
         userNameInput.id = 'userName';
         let userNameInputLabel = document.createElement('p');
@@ -137,7 +140,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         userNameInputLabel.innerHTML = 'Username';
         // Input Password
         let passwordInput = document.createElement('input');
-        passwordInput.className = '_password__input';
+        passwordInput.className = '_input__password';
         passwordInput.style.cssText = sharedInputStyles;
         passwordInput.type = 'password';
         passwordInput.id = 'password';
@@ -147,7 +150,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         // Input Container
         let inputs = document.createElement('div');
         inputs.className = '_inputs';
-        inputs.style.cssText = 'display:block;width:100%;padding:1rem 0;';
+        inputs.style.cssText = 'display:block;width:100%;';
         inputs.appendChild(userNameInputLabel);
         inputs.appendChild(userNameInput);
         inputs.appendChild(passwordInputLabel);
@@ -160,15 +163,15 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         buttons.style.cssText = 'width:100%;display:flex;justify-content:space-around;'
         +'padding:1rem 0;';
         // Amex Button
-        generateButton('_popup__acme', outlinedButtonStyles+'display:flex;', '<p>Visit AMEX</p>', buttons);
+        generateButton('_button__amex', outlinedButtonStyles+'display:flex;', '<p>Visit AMEX</p>', buttons);
         // Login Button
-        generateButton('_popup__login', solidButtonStyles, '<p>Login to Rewards</p>', buttons);
+        generateButton('_button__login', solidButtonStyles, '<p>Login to Rewards</p>', buttons);
         // Points Button
-        generateButton('_popup__points', outlinedButtonStyles+'display:none;', '<p>View Points</p>', buttons);
+        generateButton('_button__points', outlinedButtonStyles+'display:none;', '<p>View Points</p>', buttons);
         // Logout Button
-        generateButton('_popup__logout',outlinedButtonStyles+'display:none;', '<p>Log Out</p>', buttons);
-        // Book with ACME Button
-        generateButton('_popup__book', solidButtonStyles+'display:none;', '<p>Pay with Points</p>', buttons);
+        generateButton('_button__logout',outlinedButtonStyles+'display:none;', '<p>Log Out</p>', buttons);
+        // Book with AMEX Button
+        generateButton('_button__book', solidButtonStyles+'display:none;', '<p>Pay with Points</p>', buttons);
 
         // Aggregate the popup.
         let basicPopUp = document.createElement('div');
@@ -183,7 +186,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         basicPopUp.style.cssText = 'width:400px;position:fixed;top:25px;right:10px;'
         +'border:1px solid black;border-radius:5px;'
         +'background:white;color:black;'
-        +'z-index:9000;padding:1rem;';
+        +'z-index:99000;padding:1rem;';
         // Add to page
         document.body.appendChild(basicPopUp);
 
@@ -194,7 +197,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
 
 const createEvents = () => {
     // Login button action
-    document.querySelector('._popup__login').addEventListener('click', event => {
+    document.querySelector('._button__login').addEventListener('click', event => {
         http.onreadystatechange = handleLogin;
         http.open('POST', 'https://ee1huftgdh.execute-api.us-east-1.amazonaws.com/prod/auth');
         http.send(JSON.stringify({
@@ -203,25 +206,25 @@ const createEvents = () => {
         }));
     })
     // Logout button action
-    document.querySelector('._popup__logout').addEventListener('click', e => {
+    document.querySelector('._button__logout').addEventListener('click', e => {
         document.querySelector('._popup').style.display = 'none';
     });
     // Input handlers
-    document.querySelector('._username__input').addEventListener('input', e => {
+    document.querySelector('._input__username').addEventListener('input', e => {
         username = e.target.value;
     });
-    document.querySelector('._password__input').addEventListener('input', e => {
+    document.querySelector('._input__password').addEventListener('input', e => {
         password = e.target.value;
     });
     // Forgot password action
-    document.querySelector('._popup__forgot').addEventListener('click', () => {
+    document.querySelector('._button__forgot').addEventListener('click', () => {
         chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
     })
-    // ACME button action
-    document.querySelector('._popup__acme').addEventListener('click', () => {
+    // AMEX button action
+    document.querySelector('._button__amex').addEventListener('click', () => {
         chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
     })
-    // ACME button action
+    // AMEX button action
     document.querySelector('._link').addEventListener('click', () => {
         chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
     })
@@ -230,16 +233,16 @@ const createEvents = () => {
         document.querySelector('._popup').style.display = 'none';
     })
     // View points button action
-    document.querySelector('._popup__points').addEventListener('click', () => {
+    document.querySelector('._button__points').addEventListener('click', () => {
         document.querySelector('._subheader__logged').style.display = 'none';
         document.querySelector('._subheader__points').style.display = 'block';
-        document.querySelector('._popup__logout').style.display = 'flex';
-        document.querySelector('._popup__book').style.display = 'flex';
-        document.querySelector('._popup__acme').style.display = 'none';
-        document.querySelector('._popup__points').style.display = 'none';
+        document.querySelector('._button__logout').style.display = 'flex';
+        document.querySelector('._button__book').style.display = 'flex';
+        document.querySelector('._button__amex').style.display = 'none';
+        document.querySelector('._button__points').style.display = 'none';
     })
-    // Book with ACME button
-    document.querySelector('._popup__book').addEventListener('click', () => {
+    // Book with AMEX button
+    document.querySelector('._button__book').addEventListener('click', () => {
         chrome.runtime.sendMessage({command: "forgot", data: {domain: domain}}, response => console.log(response.data))
     })
 }

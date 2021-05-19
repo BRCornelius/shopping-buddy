@@ -19,13 +19,13 @@
         }
     ],
     "browser_action": {
-        "default_icon": "amex-icon.png",
+        "default_icon": "assets/amex-icon.png",
         "icons": {
-            "16": "amex-icon.png",
-            "24": "amex-icon.png",
-            "32": "amex-icon.png",
-            "48": "amex-icon.png",
-            "128": "amex-icon.png"
+            "16": "assets/amex-icon.png",
+            "24": "assets/amex-icon.png",
+            "32": "assets/amex-icon.png",
+            "48": "assets/amex-icon.png",
+            "128": "assets/amex-icon.png"
         }
     },
     "manifest_version": 2
