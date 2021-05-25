@@ -3,6 +3,27 @@ let username;
 let password;
 let points;
 
+// Shared styles
+const italicized = 'font-style:italic;';
+const fontFamily = 'font-family:roboto;';
+const bold = 'font-family:roboto;';
+const acmeRed = '#DC3A3A';
+const hidden = 'display:none;';
+const pointer = 'cursor:pointer;';
+const redText = `color:${acmeRed};`;
+const whiteText = 'color:white;';
+const redBackground = `background:${acmeRed};`;
+const whiteBackground = `background:white;`;
+const fullWidth = 'width:100%;';
+const verticalPadding = 'padding:1rem 0;';
+
+const sharedSubheaderStyles = `line-height:24px;font-family:roboto;font-style:regular;font-size:16px;${verticalPadding}`;
+const sharedLabelStyles = 'font-family:roboto;line-height:16px;font-size:14px;font-weight:bold;';
+const sharedInputStyles = `${fullWidth}border:1px solid black;height:50px;`;
+const sharedButtonStyles = `height:51px;width:49%;border-radius:5px;${pointer}`
+    +'z-index:9999;display:flex;justify-content:center;align-items:center;'
+    +`${fontFamily}${italicized}${bold}line-height:19px;font-size:16px;`;
+
 // Set up http request
 const http = new XMLHttpRequest();
 const handleLogin = e => {
@@ -11,13 +32,12 @@ const handleLogin = e => {
             const response = JSON.parse(http.response);
             if (response.statusCode === 200) {
                 const user = JSON.parse(response.body);
-                console.log(user)
                 // Points Subheader
                 points = `<p style="font-size:20px;color=red">${user.points} points.</p>`;
                 let pointsSubHeader = document.createElement('h3');
                 pointsSubHeader.className = '_subheader__points'
-                pointsSubHeader.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
-                +'font-size:16px;padding:1rem 0;display:none';
+                pointsSubHeader.style.cssText = 'line-height:24px;font-style:regular;'
+                +`font-size:16px;${fontFamily}${verticalPadding}${hidden}`;
                 pointsSubHeader.innerHTML = `You currently have ${points}`;
                 document.querySelector('._header').appendChild(pointsSubHeader);
                 document.querySelector('._subheader__default').style.display = 'none';
@@ -40,16 +60,21 @@ let domain = window.location.hostname;
 domain = domain.replace('www.', '').replace('.com', '');
 
 // Generate button
-const sharedButtonStyles = 'height:51px;width:49%;border-radius:5px;cursor:pointer;'
-+'z-index:9999;display:flex;justify-content:center;align-items:center;'
-+'font-family:roboto;font-style:italic;line-height:19px;font-size:16px;'
-+'font-weight:bold;';
 const generateButton = (className, styles, innerHTML, container) => {
     let button = document.createElement('div');
     button.className = className;
     button.style.cssText = sharedButtonStyles+styles;
     button.innerHTML = innerHTML;
     container.appendChild(button);
+}
+
+// Generate Subheader
+const generateSubheader = (className, styles, innerHTML, container) => {
+    let subheader = document.createElement('h3');
+    subheader.className = '_subheader__logged'
+    subheader.style.cssText = sharedSubheaderStyles+hidden;
+    subheader.innerHTML = 'Make the most of your points on your trip. Book using your ACME Rewards Points today!';
+    container.appendChild(subheader)
 }
 
 chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response) => {
@@ -62,55 +87,52 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         // Header Text
         let popupHeader = document.createElement('h1');
         popupHeader.style.cssText = 'line-height:40px;font-family:roboto;font-style:italic;'
-        +'font-size:40px;font-weight:bold;width:85%;';
+        +`font-size:40px;width:85%;${bold}`;
         popupHeader.innerHTML = 'MAXIMIZE YOUR REWARDS';
         // Close Button
         let closeButton = document.createElement('p')
         closeButton.className = '_close';
         closeButton.innerHTML = 'X Close'
-        closeButton.style.cssText = 'font-size:12px;color: #DC3A3A;'
+        closeButton.style.cssText = `font-size:12px;${redText}`
         // Header container
         let headerContainer = document.createElement('div');
         headerContainer.appendChild(popupHeader);
         headerContainer.appendChild(closeButton);
-        headerContainer.style.cssText = 'width:100%;display:flex;'
-        // Default Subheader
-        let popupSubHeader = document.createElement('h3');
-        popupSubHeader.className = '_subheader__default'
-        popupSubHeader.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
-        +'font-size:16px;padding:1rem 0;';
-        popupSubHeader.innerHTML = 'Log in using your ACME username and password to see your ACME Rewards Points.';
-        // Logged In Subheader
-        let popupSubHeaderLoggedIn = document.createElement('h3');
-        popupSubHeaderLoggedIn.className = '_subheader__logged'
-        popupSubHeaderLoggedIn.style.cssText = 'line-height:24px;font-family:roboto;font-style:regular;'
-        +'font-size:16px;padding:1rem 0;display:none';
-        popupSubHeaderLoggedIn.innerHTML = 'Make the most of your points on your trip. Book using your ACME Rewards Points today!';
-        // header
+        headerContainer.style.cssText = `${fullWidth}display:flex;`
         let header = document.createElement('div');
         header.className = "_header";
-        header.style.cssText = 'display:block;width:100%;';
+        header.style.cssText = `display:block;${fullWidth}`;
         header.appendChild(headerContainer);
-        header.appendChild(popupSubHeader);
-        header.appendChild(popupSubHeaderLoggedIn);
+        // Default Subheader
+        generateSubheader(
+            '_subheader__default',
+            sharedSubheaderStyles,
+            'Log in using your ACME username and password to see your ACME Rewards Points.',
+            header
+        );
+        // Logged In Subheader
+        generateSubheader(
+            '_subheader__logged',
+            sharedSubheaderStyles+hidden,
+            'Make the most of your points on your trip. Book using your ACME Rewards Points today!',
+            header
+        );
 
         // Forgot password link
         let forgotPasswordLink = document.createElement('p');
         forgotPasswordLink.className = '_popup__forgot';
         forgotPasswordLink.innerHTML = 'Forgot password?';
         let forgotPassword = document.createElement('div');
-        forgotPassword.style.cssText = 'width:100%;display:flex;justify-content:flex-end;'
-        +'cursor:pointer;text-decoration:underline;color:#DC3A3A;line-height:20px;font-size:12px;';
+        forgotPassword.style.cssText = `${fullWidth}display:flex;justify-content:flex-end;`
+        +`cursor:pointer;text-decoration:underline;${redText}line-height:20px;font-size:12px;`;
         forgotPassword.appendChild(forgotPasswordLink);
         // Login error text
         let errorText = document.createElement('p');
         errorText.className = "_error";
-        errorText.style.cssText = 'line-height:20px;font-size:12px;color:#DC3A3A;display:none;'
+        errorText.style.cssText = `line-height:20px;font-size:12px;${redText}${hidden}`
         errorText.innerHTML = 'The password and username do not match our records.'
 
         // Input Username
-        const sharedLabelStyles = 'font-family:roboto;line-height:16px;font-size:14px;font-weight:bold';
-        const sharedInputStyles = 'width:100%;border:1px solid black;height:50px';
         let userNameInput = document.createElement('input');
         userNameInput.className = '_username__input';
         userNameInput.style.cssText = sharedInputStyles;
@@ -130,7 +152,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         // Input Container
         let inputs = document.createElement('div');
         inputs.className = '_inputs';
-        inputs.style.cssText = 'display:block;width:100%;padding:1rem 0;';
+        inputs.style.cssText = `display:block;${fullWidth}${verticalPadding}`;
         inputs.appendChild(userNameInputLabel);
         inputs.appendChild(userNameInput);
         inputs.appendChild(passwordInputLabel);
@@ -140,40 +162,39 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
 
         // Button Container
         let buttons = document.createElement('div');
-        buttons.style.cssText = 'width:100%;display:flex;justify-content:space-around;'
-        +'padding:1rem 0;';
+        buttons.style.cssText = `${fullWidth}display:flex;justify-content:space-around;${verticalPadding}`
         // ACME Button
         generateButton(
             '_popup__acme',
-            'border:3px solid #DC3A3A;background:white;color:#DC3A3A;',
+            `border:3px solid #DC3A3A;${whiteBackground}${redText}`,
             '<p>VISIT ACME</p>',
             buttons
         )
         // Login Button
         generateButton(
             '_popup__login',
-            'border:1px solid #DC3A3A;background:#DC3A3A;color:white;',
+            `border:1px solid #DC3A3A;${redBackground}${whiteText}`,
             '<p>LOGIN</p>',
             buttons
         )
         // Points Button
         generateButton(
             '_popup__points',
-            'border:1px solid #DC3A3A;background:#DC3A3A;color:white;display:none;',
+            `border:1px solid #DC3A3A;${redBackground}${whiteText}${hidden}`,
             '<p>VIEW POINTS</p>',
             buttons
         )
         // Logout Button
         generateButton(
             '_popup__logout',
-            'border:3px solid #DC3A3A;background:white;color:#DC3A3A;display:none',
+            `border:3px solid #DC3A3A;${whiteBackground}${redText}${hidden}`,
             '<p>LOGOUT</p>',
             buttons
         )
         // Book with ACME Button
         generateButton(
             '_popup__book',
-            'border:1px solid #DC3A3A;background:#DC3A3A;color:white;display:none;',
+            `border:1px solid #DC3A3A;${redBackground}${whiteText}${hidden}`,
             '<p>BOOK WITH ACME</p>',
             buttons
         );
@@ -190,7 +211,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         // Add styles
         basicPopUp.style.cssText = 'width:400px;position:fixed;top:25px;right:10px;'
         +'border:1px solid black;border-radius:5px;'
-        +'background:white;color:black;'
+        +`${whiteBackground}color:black;`
         +'z-index:9000;padding:1rem;';
         // Add to page
         document.body.appendChild(basicPopUp);
