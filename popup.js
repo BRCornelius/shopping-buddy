@@ -3,10 +3,10 @@ let username;
 let password;
 
 const helvetica = 'Helvetica Neue'
-const fontFamilyLight = `${helvetica} Light`;
-const fontFamilyRegular = `${helvetica} Regular`;
-const fontFamilyMedium = `${helvetica} Medium`;
-const fontFamilyBold = `${helvetica} Bold`;
+const fontFamilyLight = `"${helvetica}",Helvetica,Arial,sans-serif;font-weight:lighter`;
+const fontFamilyRegular = `"${helvetica}",Helvetica,Arial,sans-serif;font-weight:normal`;
+const fontFamilyMedium = `"${helvetica}",Helvetica,Arial,sans-serif;font-weight:bolder`;
+const fontFamilyBold = `"${helvetica}",Helvetica,Arial,sans-serif;font-weight:bold`;
 
 const defaultColor = '#006FCF';
 const darkBlue = '#00175A';
@@ -48,16 +48,15 @@ const handleLogin = () => {
 
 // Handle domain
 let domain = window.location.hostname;
-domain = domain.replace('www.', '').replace('.com', '');
+domain = domain.split('.')[1];
 // Set up array of sites that allow the popup.
-const positiveSites = ['marriott', 'kayak']
+const positiveSites = ['marriott', 'kayak', 'fourseasons']
 const checkDomain = positiveSites.includes(domain);
 
 // Generate button
 const sharedButtonStyles = 'height:51px;width:45%;border-radius:5px;cursor:pointer;'
 +'z-index:999999;display:flex;justify-content:center;align-items:center;'
-+`font-family:${fontFamilyMedium};line-height:19px;font-size:16px;`
-+'font-weight:bold;';
++`font-family:${fontFamilyBold};line-height:19px;font-size:16px;`;
 const solidButtonStyles = `${sharedButtonStyles}border:1px solid ${defaultColor};background:${defaultColor};color:white;`
 const outlinedButtonStyles = `${sharedButtonStyles}border:3px solid ${defaultColor};background:white;color:${defaultColor};`
 const generateButton = (className, styles, innerHTML, container) => {
@@ -67,8 +66,8 @@ const generateButton = (className, styles, innerHTML, container) => {
     button.innerHTML = innerHTML;
     container.appendChild(button);
 }
-const headerStyles = `line-height:44px;font-family:${fontFamilyLight};color:${darkBlue};`
-+'font-size:38px;width:100%;font-weight:lighter;margin:0;';
+const headerStyles = `line-height:44px;font-family:${fontFamilyMedium};color:${darkBlue};`
++'font-size:40px;width:100%;margin:0;';
 
 chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response) => {
     let siteCheck = response.data && checkDomain
@@ -92,23 +91,23 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         let closeButton = document.createElement('p')
         closeButton.className = '_close';
         closeButton.innerHTML = 'X'
-        closeButton.style.cssText = `font-size:16px;color:${defaultColor};font-weight:bold;cursor:pointer;padding-right:0.5rem;`
+        closeButton.style.cssText = `font-size:20px;color:${defaultColor};font-family:${fontFamilyMedium};cursor:pointer;`
         // Header container
         const headerContainer = document.createElement('div');
         headerContainer.appendChild(popupHeader);
         headerContainer.appendChild(closeButton);
-        headerContainer.style.cssText = 'width:95%;display:flex;justify-content:space-between;'
+        headerContainer.style.cssText = 'display:flex;justify-content:space-between;'
         // Default Subheader
         const sharedSubheaderStyles = `line-height:24px;font-family:${fontFamilyRegular};color:${lightGrey};`
-        + 'font-size:16px;font-style:regular;';
+        + 'font-size:20px;font-style:regular;';
         const popupSubHeader = document.createElement('h3');
         const partnerLink = document.createElement('h3');
         partnerLink.innerHTML = 'AmexTravel.com.';
-        partnerLink.style.cssText = 'color:blue;text-decoration:underline;cursor:pointer;font-size:16px;'
+        partnerLink.style.cssText = 'color:blue;text-decoration:underline;cursor:pointer;font-size:20px;'
         partnerLink.className = '_link';
         popupSubHeader.className = '_subheader__default'
         popupSubHeader.style.cssText = sharedSubheaderStyles;
-        popupSubHeader.innerHTML = `Save by getting $200 back in statement credits on prepaid Fine Hotel + Resorts® or The Hotel Collection bookings with American Express Travel when you pay with your Platinum Card®. Terms Apply.`;
+        popupSubHeader.innerHTML = `Save by getting $200 back in statement credits on prepaid Fine Hotel + Resorts<sup>®</sup> or The Hotel Collection bookings with American Express Travel when you pay with your Platinum Card<sup>®</sup>. Terms Apply.`;
         const popupSubHeaderLogin = document.createElement('h3');
         popupSubHeaderLogin.className = '_subheader__login';
         popupSubHeaderLogin.style.cssText = sharedSubheaderStyles+'display:none;';
@@ -123,11 +122,11 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         let pointsSubHeader = document.createElement('h3');
         pointsSubHeader.className = '_subheader__points'
         pointsSubHeader.style.cssText = `line-height:24px;font-family:${fontFamilyRegular};font-style:regular;display:none;`
-        +'font-size:20px;padding:1rem 0;';
+        +'font-size:26px;padding:1rem 0;';
         // header
         const header = document.createElement('div');
         header.className = "_header";
-        header.style.cssText = 'display:block;width:95%;padding-top:1rem;padding-left:1rem;';
+        header.style.cssText = 'display:block;padding-top:1rem;padding-left:1.5rem;padding-right:1.5rem;';
         header.appendChild(headerContainer);
         header.appendChild(pointsSubHeader)
         header.appendChild(popupSubHeader);
@@ -140,13 +139,14 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         forgotPasswordLink.innerHTML = 'Forgot password?';
         let forgotPassword = document.createElement('div');
         forgotPassword.style.cssText = 'width:100%;display:flex;justify-content:flex-end;'
-        +`cursor:pointer;text-decoration:underline;color:${defaultColor};line-height:24px;font-size:16px;`;
+        +`cursor:pointer;text-decoration:underline;color:${defaultColor};line-height:24px;font-size:20px;`
+        +`font-family:${fontFamilyRegular}`;
         forgotPassword.appendChild(forgotPasswordLink);
 
         // Login error container
         const error = document.createElement('div');
         error.className = '_error';
-        error.style.cssText = 'line-height:20px;display:none;padding-left:0.5rem;align-items:center;'
+        error.style.cssText = 'line-height:20px;display:none;padding-left:1rem;align-items:center;'
         // Error icon
         const errorIcon = document.createElement('img');
         errorIcon.className = '_error__icon';
@@ -155,14 +155,14 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         // Login error text
         let errorText = document.createElement('p');
         errorText.className = "_error__text";
-        errorText.style.cssText = `font-size:12px;color:${errorRed};padding-left:0.5rem;`
+        errorText.style.cssText = `font-size:16px;color:${errorRed};padding-left:0.5rem;font-family:${fontFamilyRegular};`
         errorText.innerHTML = 'The password and username do not match our records.'
         error.appendChild(errorIcon);
         error.appendChild(errorText);
 
         // Input Username
-        const sharedLabelStyles = `font-family:${fontFamilyBold};line-height:16px;font-size:14px;font-weight:bold;`;
-        const sharedInputStyles = 'width:100%;border:1px solid black;height:50px;padding-left:5px;';
+        const sharedLabelStyles = `font-family:${fontFamilyBold};line-height:16px;font-size:16px;`;
+        const sharedInputStyles = `font-family:${fontFamilyRegular};width:100%;border:1px solid black;height:50px;padding-left:5px;`;
         let userNameInput = document.createElement('input');
         userNameInput.className = '_input__username';
         userNameInput.style.cssText = sharedInputStyles;
@@ -182,7 +182,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         // Input Container
         let inputs = document.createElement('div');
         inputs.className = '_inputs';
-        inputs.style.cssText = 'display:none;width:92%;padding:0.75rem;';
+        inputs.style.cssText = 'display:none;padding:0.75rem;';
         inputs.appendChild(userNameInputLabel);
         inputs.appendChild(userNameInput);
         inputs.appendChild(passwordInputLabel);
@@ -219,7 +219,7 @@ chrome.runtime.sendMessage({command: "fetch", data: {domain: domain}}, (response
         basicPopUp.appendChild(error);
 
         // Add styles
-        basicPopUp.style.cssText = 'width:400px;position:fixed;top:25px;right:10px;'
+        basicPopUp.style.cssText = 'width:600px;position:fixed;top:25px;right:10px;'
         +'border:1px solid black;border-radius:5px;'
         +'background:white;color:black;'
         +'z-index:99000;';
